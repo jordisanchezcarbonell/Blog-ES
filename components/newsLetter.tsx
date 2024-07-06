@@ -5,11 +5,13 @@ export default function NewsLetter() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const subscribeUser = async (e: FormEvent) => {
     e.preventDefault();
 
     console.log("dentro de la funcion", email);
+    setIsLoading(true);
     try {
       const res = await fetch("/api/subscribeUser", {
         body: JSON.stringify({ email }),
@@ -31,6 +33,8 @@ export default function NewsLetter() {
       console.error("Error en la suscripción:", error);
       setMessage("Hubo un error. Por favor, inténtalo de nuevo.");
       setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,11 +66,11 @@ export default function NewsLetter() {
             <button
               type="submit"
               className={`focus:outline-none focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 dark:border-gray-600 sm:border-transparent w-full sm:w-auto bg-gray-900 dark:bg-gray-700 text-white py-4 px-6 hover:bg-opacity-75 ${
-                email === "" ? "opacity-50 cursor-not-allowed" : ""
+                email === "" || isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={email === ""}
+              disabled={email === "" || isLoading}
             >
-              Suscribirse
+              {isLoading ? "Cargando..." : "Suscribirse"}
             </button>
           </form>
           {message && (
